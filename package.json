@@ -1,0 +1,17 @@
+{
+  "name": "selfhelp",
+  "version": "0.0.3",
+  "description": "An example application capable of self upgrading automatically or on-demand.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "nodemon": "~0.7.10"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  }
+}
