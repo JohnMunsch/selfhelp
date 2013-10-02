@@ -4,7 +4,7 @@
 
 **selfhelp** is not exactly a library, it's more of an example set of code which demonstrates a Node.js server capable of running from the command line which has a web based UI and self updating to new versions.
 
-It's automatically checks for new versions then (either manually or automatically) downloading, verifying, installing, and restarting itself.
+It's automatically checks for new versions and then (either manually or automatically) downloads, verifies, installs, and restarts itself.
 
 Using this as a starting point you could start out an application the same way Google started out the Chrome browser, as an app capable of installing a new version of itself and almost nothing else. Then build upon that with new versions and know your users are upgrading because it's easy to do so.
 
