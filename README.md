@@ -1,7 +1,6 @@
 # selfhelp
 
-**Note: Super important. Everything written below is about what selfhelp will be. I'm still working on it and it's not quite there yet, though it's coming along quickly.
-**
+**Note: Super important. Everything written below is about what selfhelp will be. I'm still working on it and it's not quite there yet, though it's coming along quickly.**
 
 ## Overview
 
