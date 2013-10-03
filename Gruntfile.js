@@ -41,7 +41,8 @@ module.exports = function(grunt) {
           }
         ]
       }
-    }
+    },
+    copy: grunt.file.copy("selfhelp.sh", "dist/selfhelp.sh")
   });
 
   // Load the plugin that provides the "uglify" task.
