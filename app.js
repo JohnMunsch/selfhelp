@@ -11,7 +11,7 @@ var downloadDestination = "newVersion.zip";
 
 // You might make this an option available to your users or you could just decide how you want it to be, set it, and
 // forget it.
-var autoInstall = false;
+var autoInstall = true;
 
 function startPolling() {
   // Check for a new version.
@@ -26,14 +26,22 @@ function poll(url) {
   // the latest version of the downloaded information will be visible to the rest of the application.
   http.get("http://localhost/versionInfo.json", function(res) {
     res.on('data', function (versionInfo) {
-      checkDownloadValidateAndInstall(JSON.parse(versionInfo));
+      // The default response to a new version is to do absolutely nothing.
+      var handleNewVersion = function () { };
+
+      // But if the user has indicated he/she wants to automatically download, verify, install, etc. then we can
+      // build up that sequence here.
+      if (autoInstall) {
+
+      }
+      checkAndInstall(JSON.parse(versionInfo));
     });
   }).on('error', function(e) {
     console.log("Got error: " + e.message);
   });
 }
 
-function checkDownloadValidateAndInstall(versionInfo) {
+function checkAndInstall(versionInfo, callback) {
   lastPollingResults = versionInfo;
   lastPollingResults.newVersionAvailable = false;
 
@@ -42,35 +50,8 @@ function checkDownloadValidateAndInstall(versionInfo) {
     // Update the polling results to indicate that there's a newer version than the installed one available.
     lastPollingResults.newVersionAvailable = true;
 
-    // There's a new version, do we automatically run the installation sequence now?
-    if (autoInstall) {
-      downloadValidateAndInstall(versionInfo.downloadURL);
-    }
+    callback(versionInfo.downloadURL);
   }
-}
-
-function downloadValidateAndInstall(downloadURL) {
-  // Execute the complete sequence of operations.
-  var file = fs.createWriteStream(downloadDestination);
-
-  var request = http.get(downloadURL, function (response) {
-    response.pipe(file);
-
-    file.on("finish", function() {
-      file.close();
-
-      function validate() {
-        // Validate that what we downloaded is good.
-        function install() {
-          // Install the software.
-          function cleanUp() {
-            // Clean up the downloaded file.
-            lastPollingResults.newVersionAvailable = false;
-          }
-        }
-      }
-    });
-  });
 }
 
 /**
@@ -107,6 +88,53 @@ function newVersion(localVersion, pollingResult) {
   }
 
   return false;
+}
+
+function download(downloadURL, callback) {
+  // Execute the complete sequence of operations.
+  var file = fs.createWriteStream(downloadDestination);
+
+  var request = http.get(downloadURL, function (response) {
+    response.pipe(file);
+
+    file.on("finish", function() {
+      console.log("New version downloaded.");
+
+      file.close(function () {
+        callback();
+      });
+    });
+  });
+}
+
+function validate(callback) {
+  // Validate is a no-op at the moment. None of the JavaScript ZIP implementations I've looked at so far has had the
+  // ability to test a ZIP file to make sure it downloaded without errors. A good substitute would be to calculate a
+  // hash value for the original ZIP file when it was created and then put that same hash into the versionInfo.json
+  // file. That hash could be checked once the file has been downloaded.
+
+  callback();
+}
+
+function install(callback) {
+  // Unzip the downloaded file here, replacing all of the files which make up the application. A more sophisticated
+  // install might allow for deleting old orphaned files which were once used but no longer are.
+
+  callback();
+}
+
+function cleanUpAndTriggerRestart() {
+  // Clean up the downloaded file.
+  fs.unlink(downloadDestination, function () {
+    // Now touch the semaphore file that signals we need to restart the server.
+    fs.open("status.js", "w+", function (err, fd) {
+      var newTime = new Date().getTime();
+
+      fs.futimes(fd, newTime, newTime, function (err) {
+        fs.closeSync(fd);
+      });
+    });
+  });
 }
 
 function gracefulShutdown(postShutdown) {

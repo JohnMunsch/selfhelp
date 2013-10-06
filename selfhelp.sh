@@ -1,1 +1,1 @@
-node node_modules/nodemon/nodemon.js --watch status.js
+node node_modules/nodemon/nodemon.js --delay 3 --watch status.js
