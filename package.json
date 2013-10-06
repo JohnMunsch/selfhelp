@@ -10,7 +10,8 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "nodemon": "~0.7.10",
-    "adm-zip": "~0.4.3"
+    "adm-zip": "~0.4.3",
+    "lodash": "~2.2.1"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

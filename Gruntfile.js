@@ -11,8 +11,9 @@ module.exports = function(grunt) {
       'dist': {
         src: [
           'app.js',
-          'node_modules/nodemon/**/*',
           'node_modules/adm-zip/**/*',
+          'node_modules/lodash/**/*',
+          'node_modules/nodemon/**/*',
           'package.json',
           'selfhelp.sh'
         ],
