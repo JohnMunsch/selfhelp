@@ -1,10 +1,8 @@
 # selfhelp
 
-**Note: Super important. Everything written below is about what selfhelp will be. I'm still working on it and it's not quite there yet, though it's coming along quickly.**
-
 ## Overview
 
-**selfhelp** is not exactly a library, it's more of an example set of code which demonstrates a Node.js server capable of running from the command line which has a web based UI and self updating to new versions.
+**selfhelp** is not exactly a library, it's more of an example set of code which demonstrates a Node.js server capable of running from the command line which has a web based UI and updating itself to new versions.
 
 It automatically checks for new versions and then (either manually or automatically) downloads, verifies, installs, and restarts itself.
 
@@ -20,7 +18,7 @@ The first app I ever ran as a webapp on my machine was the old RSS reader Amphet
 
 1. Look for the big green Install Node.js button on the Node.js home page. Download the installer and run that.
 
-1. Download and unzip this file into a directory on your machine.
+1. Download and unzip the installation file for the project into a directory on your machine.
 
 1. Double click the selfhelp.bat file on Windows or the selfhelp.sh file on Mac/Linux. **selfhelp** will run and launch a page in your browser so you can interact with it. Don't forget to bookmark that page.
 
@@ -28,12 +26,10 @@ The first app I ever ran as a webapp on my machine was the old RSS reader Amphet
 
 If you want to build a new Node.js server based upon **selfhelp**, just follow this handy checklist:
 
-1. Add in your own Node.js server instead of my stupidly simple example code.
+1. Add your own Node.js server instead of my stupidly simple example code I've got at the end of the app.js file.
 
 1. Put your own shutdown code (if any) into the gracefulShutdown() function. It will be executed any time nodemon restarts your server.
 
 1. Figure out where you should host new versions of your application. There needs to be a URL somewhere on the web which **selfhelp** can check, compare the version number of the running version against the version found, and then decide whether a new version is now available.
 
 1. Update the information (especially the version number) in the package.json file to reflect your own application. The example loads that on startup and makes the version number and other info available for display.
-
-1. Make sure the delay setting in selfhelp.sh and selfhelp.bat is set to an appropriate length. If not then nodemon will restart your app multiple times during the installation of a new version.

@@ -1,6 +1,7 @@
 var http = require("http");
 var fs = require("fs");
 var _ = require("lodash");
+var AdmZip = require("adm-zip");
 var pjson = require("./package.json");
 
 // The official location which should be polled to check for new version info. The format of the data expected at that
@@ -8,7 +9,10 @@ var pjson = require("./package.json");
 var pollingURL = "http://localhost/versionInfo.json";
 var pollingInterval = 4000;
 var lastPollingResults = { };
+var pollingIntervalID;
+
 var downloadDestination = "newVersion.zip";
+var deploymentDestination = ".";
 
 // You might make this an option available to your users or you could just decide how you want it to be, set it, and
 // forget it.
@@ -16,7 +20,11 @@ var autoInstall = true;
 
 function startPolling() {
   // Check for a new version.
-  setInterval(poll, pollingInterval);
+  pollingIntervalID = setInterval(poll, pollingInterval);
+}
+
+function stopPolling() {
+  clearInterval(pollingIntervalID);
 }
 
 function poll(url) {
@@ -28,11 +36,15 @@ function poll(url) {
   http.get("http://localhost/versionInfo.json", function(res) {
     res.on('data', function (versionInfo) {
       // The default response to a new version is to do absolutely nothing.
-      var handleNewVersion = function () { };
+      var handleNewVersion = function () {
+        console.log("New version available...");
+      };
 
       // But if the user has indicated he/she wants to automatically download, verify, install, etc. then we can
       // build up that sequence here.
       if (autoInstall) {
+        stopPolling();
+
         // I'm using underscore.js's ability to bind variables to a function and then stacking them up so we can pass
         // a single callback into the first function and get a whole series of behavior.
         var installNewVersion = _.partialRight(install, cleanUpAndTriggerRestart);
@@ -127,13 +139,15 @@ function install(callback) {
   // Unzip the downloaded file here, replacing all of the files which make up the application. A more sophisticated
   // install might allow for deleting old orphaned files which were once used but no longer are.
   console.log("Installing New Version...");
+  var zip = new AdmZip(downloadDestination);
+  zip.extractAllTo(deploymentDestination, true);
+  fs.chmodSync('selfhelp.sh', 0755);
 
   callback();
 }
 
 function cleanUpAndTriggerRestart() {
   console.log("Cleaning Up And Triggering Restart...");
-  autoInstall = false;
 
   // Clean up the downloaded file.
   fs.unlink(downloadDestination, function () {
