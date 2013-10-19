@@ -7,6 +7,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: [ "dist" ],
     zip: {
       'dist': {
         src: [
@@ -47,9 +48,10 @@ module.exports = function(grunt) {
   });
 
   // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-zip');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-replace');
+  grunt.loadNpmTasks('grunt-zip');
 
   // Default task(s).
-  grunt.registerTask('default', [ 'zip', 'replace' ]);
+  grunt.registerTask('default', [ 'clean', 'zip', 'replace' ]);
 };

@@ -1,6 +1,6 @@
 {
   "name": "selfhelp",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "An example application capable of self upgrading automatically or on-demand.",
   "main": "app.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-zip": "~0.9.2",
-    "grunt-replace": "~0.5.1"
+    "grunt-replace": "~0.5.1",
+    "grunt-contrib-clean": "~0.5.0"
   }
 }
