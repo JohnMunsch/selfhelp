@@ -1,6 +1,5 @@
 var http = require("http");
 var fs = require("fs");
-var _ = require("lodash");
 var AdmZip = require("adm-zip");
 var pjson = require("./package.json");
 
@@ -41,15 +40,10 @@ function poll(url) {
       };
 
       // But if the user has indicated he/she wants to automatically download, verify, install, etc. then we can
-      // build up that sequence here.
+      // set that up here.
       if (autoInstall) {
-        stopPolling();
-
-        // I'm using underscore.js's ability to bind variables to a function and then stacking them up so we can pass
-        // a single callback into the first function and get a whole series of behavior.
-        var installNewVersion = _.partialRight(install, cleanUpAndTriggerRestart);
-        var validateNewVersion = _.partialRight(validate, installNewVersion);
-        handleNewVersion = _.partialRight(download, validateNewVersion);
+        // Pass in the first step of the multi-step sequence.
+        handleNewVersion = download;
       }
 
       checkAndHandleNewVersion(JSON.parse(versionInfo), handleNewVersion);
@@ -65,10 +59,14 @@ function checkAndHandleNewVersion(versionInfo, callback) {
 
   // Is a new version available?
   if (newVersion(pjson.version, versionInfo)) {
+console.log("It thinks there's a new version.");
+
     // Update the polling results to indicate that there's a newer version than the installed one available.
     lastPollingResults.newVersionAvailable = true;
 
     callback(versionInfo.downloadURL);
+  } else {
+    console.log("No new version...");
   }
 }
 
@@ -108,7 +106,8 @@ function newVersion(localVersion, pollingResult) {
   return false;
 }
 
-function download(downloadURL, callback) {
+function download(downloadURL) {
+  stopPolling();
   console.log("Downloading New Version...");
 
   // Execute the complete sequence of operations.
@@ -119,23 +118,23 @@ function download(downloadURL, callback) {
 
     file.on("finish", function() {
       file.close(function () {
-        callback();
+        validate();
       });
     });
   });
 }
 
-function validate(callback) {
+function validate() {
   // Validate is a no-op at the moment. None of the JavaScript ZIP implementations I've looked at so far has had the
   // ability to test a ZIP file to make sure it downloaded without errors. A good substitute would be to calculate a
   // hash value for the original ZIP file when it was created and then put that same hash into the versionInfo.json
   // file. That hash could be checked once the file has been downloaded.
   console.log("Validating New Version...");
 
-  callback();
+  install();
 }
 
-function install(callback) {
+function install() {
   // Unzip the downloaded file here, replacing all of the files which make up the application. A more sophisticated
   // install might allow for deleting old orphaned files which were once used but no longer are.
   console.log("Installing New Version...");
@@ -143,7 +142,7 @@ function install(callback) {
   zip.extractAllTo(deploymentDestination, true);
   fs.chmodSync('selfhelp.sh', 0755);
 
-  callback();
+  cleanUpAndTriggerRestart();
 }
 
 function cleanUpAndTriggerRestart() {
