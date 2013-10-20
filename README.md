@@ -12,7 +12,9 @@ Using this as a starting point you could start out an application the same way G
 
 It's not about server apps. Although you could use something like this to auto update a server application, I'm not sure you would. This is about building cross-platform applications using Node.js which users can easily install and run on their own machines and update just like they do the other apps they run. Once you've installed Node.js then installing your application could be made very simple indeed. Look below for my instructions for installing and running **selfhelp** to see just how simple.
 
-The first app I ever ran as a webapp on my machine was the old RSS reader Amphetadesk. I no longer run that one but there are a new generation of applications with really nice web based interfaces which run on a user's local machine (for example, SABNZBD, Couch Potato, and Sick Beard). I thought  Node.js offered the best medium for building apps like this that I've seen so I thought I'd see if I could do it and how hard it woud be.
+The first app I ever ran as a webapp on my machine was the old RSS reader Amphetadesk. I no longer run that one but there are a new generation of applications like SABnzbd+, the Plex Media Server, Couch Potato, and Sick Beard which work well on Mac OS X, Windows, or Linux and your interface to them is through your browser.
+
+I thought  Node.js offered the best medium for building apps like this that I've seen so I thought I'd see if I could do it and how hard it woud be.
 
 ## Install and run selfhelp
 
@@ -26,10 +28,19 @@ You're just going to use Git to pull down the repository and start working, but 
 
 ## selfhelp Checklist
 
-If you want to build a new Node.js server based upon **selfhelp**, just look for the TODO comments sprinkled through the app.js, Gruntfile.js, and package.json files. But I've gone ahead and done a short summary of the major things below.
+If you want to build a new Node.js server based upon **selfhelp**, just search for the TODO comments sprinkled through the app.js, Gruntfile.js, and package.json files. But I've gone ahead and done a short summary of the major things below.
 
 1. Add your own Node.js server instead of the stupidly simple example code I've got at the end of the app.js file.
 
 1. Put your own shutdown code (if any) into the gracefulShutdown() function. It will be executed any time nodemon restarts your server.
 
 1. Update the information (especially the version number) in the package.json file to reflect your own application. The example loads that on startup and makes the version number and other info available for display.
+
+## Issues
+There really is no validation of the newly downloaded version taking place at the present time. It's just a placeholder function that does nothing.
+
+I don't have a Windows or Linux machine available to me to test this so it hasn't been tested on either one. Nor is there a BAT file or other easy means to launch this on Windows.
+
+Likewise I'm still having some difficulty with launching the app on Mac OS X as well. You have to "chmod +x selfhelp.sh" after installing it the first time and then run ./selfhelp.sh from the command line. That's not what we want end users to do. They just need something to double click to kick it off on any system.
+
+The code related to polling and the download/validate/install/restart cycle all needs to be pulled out into a separate module. In fact it could be made into an npm package at some point.
