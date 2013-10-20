@@ -1,6 +1,11 @@
+// TODO: Make sure this file is filled with information for your particular app. Especially the version!
+// selfhelp uses the version it loads from this file to know which version is installed on the end user's machine. It
+// compares this value with the one in the version.info file it downloads from your server to know whether or not it
+// should upgrade. You must update the version religiously if you expect users to be notified of or automatically
+// install new versions.
 {
   "name": "selfhelp",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "An example application capable of self upgrading automatically or on-demand.",
   "main": "app.js",
   "scripts": {

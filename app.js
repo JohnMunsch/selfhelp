@@ -12,10 +12,11 @@ var pollingInterval = 4000;
 // You might make this an option available to your users or you could just decide how you want it to be, set it, and
 // forget it. Note: If you turn off auto install, then you need to provide a button which invokes
 // download(lastPollingResults.downloadURL) so the end user can manually kick off a software upgrade.
-var autoInstall = false;
+var autoInstall = true;
 
 // I doubt you'll need to change either of these.
 var downloadDestination = "newVersion.zip";
+var semaphoreFilename = "status.js";
 var deploymentDestination = ".";
 
 // This exposes the results of the last polling. The main values you're likely to be interested in is
@@ -157,12 +158,10 @@ function cleanUpAndTriggerRestart() {
   // Clean up the downloaded file.
   fs.unlink(downloadDestination, function () {
     // Now touch the semaphore file that signals we need to restart the server.
-    fs.open("status.js", "w+", function (err, fd) {
-      var newTime = new Date().getTime();
-
-      fs.futimes(fd, newTime, newTime, function (err) {
-        fs.closeSync(fd);
-      });
+    fs.writeFile(semaphoreFilename, lastPollingResults.version, function (err) {
+      if (err) {
+        console.log("Unable to write to the file which would trigger a restart.");
+      }
     });
   });
 }
