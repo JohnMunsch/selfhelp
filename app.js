@@ -3,19 +3,29 @@ var fs = require("fs");
 var AdmZip = require("adm-zip");
 var pjson = require("./package.json");
 
+// TODO: Update these settings for your particular program.
 // The official location which should be polled to check for new version info. The format of the data expected at that
 // URL is discussed below in the poll() function.
 var pollingURL = "http://localhost/versionInfo.json";
 var pollingInterval = 4000;
-var lastPollingResults = { };
-var pollingIntervalID;
 
+// You might make this an option available to your users or you could just decide how you want it to be, set it, and
+// forget it. Note: If you turn off auto install, then you need to provide a button which invokes
+// download(lastPollingResults.downloadURL) so the end user can manually kick off a software upgrade.
+var autoInstall = false;
+
+// I doubt you'll need to change either of these.
 var downloadDestination = "newVersion.zip";
 var deploymentDestination = ".";
 
-// You might make this an option available to your users or you could just decide how you want it to be, set it, and
-// forget it.
-var autoInstall = true;
+// This exposes the results of the last polling. The main values you're likely to be interested in is
+// lastPollingResults.newVersionAvailable or lastPollingResults.version. You can see both of those used below in the
+// simple server to update the page at localhost:1337 with the knowledge that a new version is available and its
+// version number.
+var lastPollingResults = { };
+
+
+var pollingIntervalID;
 
 function startPolling() {
   // Check for a new version.
@@ -58,15 +68,11 @@ function checkAndHandleNewVersion(versionInfo, callback) {
   lastPollingResults.newVersionAvailable = false;
 
   // Is a new version available?
-  if (newVersion(pjson.version, versionInfo)) {
-console.log("It thinks there's a new version.");
-
+  if (newVersion(pjson.version, lastPollingResults)) {
     // Update the polling results to indicate that there's a newer version than the installed one available.
     lastPollingResults.newVersionAvailable = true;
 
-    callback(versionInfo.downloadURL);
-  } else {
-    console.log("No new version...");
+    callback(lastPollingResults.downloadURL);
   }
 }
 
@@ -184,7 +190,7 @@ http.createServer(function (req, res) {
 
   res.write("<p><em>selfhelp</em> - Self updating Node.js example<br>Version " + pjson.version + "</p>");
   if (lastPollingResults.newVersionAvailable) {
-    res.end("<p>New Version Available</p>");
+    res.end("<p>New Version " + lastPollingResults.version + " Available</p>");
   } else {
     res.end("");
   }
