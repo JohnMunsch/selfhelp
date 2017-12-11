@@ -1,5 +1,7 @@
 # selfhelp
 
+**Deprecated**: I would not use this code anymore. It was an interesting project but these days it would make a lot more sense to start from [Electron](https://electronjs.org/) which has built in support for upgrading the application and which has lots of support for you building cross-platform applications using JavaScript, Node.js, and Chrome.
+
 ## Overview
 
 **selfhelp** is not exactly a library, it's more of an example set of code which demonstrates a Node.js server capable of running from the command line which has a web based UI and updating itself to new versions.
